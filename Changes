@@ -1,0 +1,6 @@
+Revision history for Oraperl
+
+{{$NEXT}}
+    - Oraperl module separated from the main DBD::Release distro,
+        to ease deprecation process.
+

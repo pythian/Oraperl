@@ -1,0 +1,12 @@
+Build.PL
+Changes
+INSTALL
+LICENSE
+MANIFEST
+META.json
+META.yml
+README
+README.mkdn
+lib/Oraperl.pm
+t/000-report-versions.t
+xt/release/unused-vars.t
