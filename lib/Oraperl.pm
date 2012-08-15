@@ -839,6 +839,8 @@ reported to to dbi-users@perl.org.
 
 =over 2
 
+=item L<DBD::Oracle>
+
 =item Oracle Documentation
 
 SQL Language Reference Manual.
