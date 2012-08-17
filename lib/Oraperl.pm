@@ -16,10 +16,13 @@
 # both oraperl and perl 5.
 
 package Oraperl;
+# ABSTRACT: [DEPRECATED] Perl access to Oracle databases for old oraperl scripts
 
 require 5.004;
 
 use DBI 1.22;
+use DBD::Oracle;
+
 use Exporter;
 
 @ISA = qw(Exporter);
@@ -225,9 +228,6 @@ $Oraperl::ora_trunc = 0; 	# long trunc is error, oraperl default
 1;
 __END__
 
-=head1 NAME
-
-Oraperl - [DEPRECATED] Perl access to Oracle databases for old oraperl scripts
 
 =head1 SYNOPSIS
 
@@ -871,7 +871,7 @@ my assistance and gratitude.
 Copyright (c) 1994-2006 Tim Bunce. Ireland.
 Copyright (c) 2006-2008 John Scoles (The Pythian Group). Canada.
 
-The DBD::Oracle module is free open source software; you can
+Oraperl and the DBD::Oracle module is free open source software; you can
 redistribute it and/or modify it under the same terms as Perl 5.
 
 =cut
