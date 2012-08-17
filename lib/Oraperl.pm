@@ -16,10 +16,19 @@
 # both oraperl and perl 5.
 
 package Oraperl;
+{
+  $Oraperl::VERSION = '1.50';
+}
+BEGIN {
+  $Oraperl::AUTHORITY = 'cpan:PYTHIAN';
+}
+# ABSTRACT: [DEPRECATED] Perl access to Oracle databases for old oraperl scripts
 
 require 5.004;
 
 use DBI 1.22;
+use DBD::Oracle;
+
 use Exporter;
 
 @ISA = qw(Exporter);
@@ -140,9 +149,9 @@ sub ora_do {
     # We must be carefull not to execute them again! This needs careful
     # examination and thought.
     # Perhaps oracle is smart enough not to execute them again?
-    my $ret = $csr->execute(@params);
+    $csr->execute(@params);
     my $rows = $csr->rows;
-    ($rows == 0) ? "0E0" : $rows;
+    return  $rows ||  '0E0';
 }
 
 
@@ -223,11 +232,17 @@ $Oraperl::ora_trunc = 0; 	# long trunc is error, oraperl default
 
 
 1;
-__END__
+
+
+=pod
 
 =head1 NAME
 
 Oraperl - [DEPRECATED] Perl access to Oracle databases for old oraperl scripts
+
+=head1 VERSION
+
+version 1.50
 
 =head1 SYNOPSIS
 
@@ -292,8 +307,6 @@ with both the perl4 oraperl and perl5 you should add add the following
 text instead:
 
   eval 'use Oraperl; 1;' || die $@ if $] >= 5;
-
-
 
 =head2 Principal Functions
 
@@ -465,7 +478,6 @@ This function is equivalent to the OCI oclose function.
 B<DBD:> Since $csr is a Perl5 reference the statement/cursor is now
 automatically closed if $csr is overwritten or goes out of scope.
 
-
 =item * ora_do
 
   &ora_do($lda, $statement)
@@ -536,7 +548,6 @@ true.  This was not reflected in the oraperl manual.  The Oraperl
 emulation adopts the non truncating behaviour and doesn't support the
 truncate parameter.
 
-
 =item * ora_lengths
 
   @lengths = &ora_lengths($csr)
@@ -547,7 +558,6 @@ This function takes a single parameter, a statement
 identifier (obtained from &ora_open()) indicating the query
 for which the lengths are required. The lengths are
 returned as an array of integers, one for each column.
-
 
 =item * ora_types
 
@@ -561,7 +571,6 @@ returned as an array of integers, one for each field.
 
 These types are defined in your OCI documentation. The correct
 interpretation for Oracle v6 is given in the file oraperl.ph.
-
 
 =item * ora_autocommit
 
@@ -580,7 +589,6 @@ deletions to be rolled back, but insertions to be committed
 immediately) you should make multiple calls to &ora_login() and use a
 separate login identifier for each statement.
 
-
 =item * ora_commit, ora_rollback
 
   &ora_commit($lda)
@@ -598,7 +606,6 @@ Note that commit and rollback can only be used per login, not per
 statement. If you need to commit or rollback by statement you should
 make multiple calls to &ora_login() and use a separate login identifier
 for each statement.
-
 
 =item * ora_version
 
@@ -659,7 +666,6 @@ As a special case, assigning zero to $ora_cache resets it to the
 default value. Attempting to set $ora_cache to a negative value results
 in a warning.
 
-
 =item * $ora_long
 
 Normally, Oraperl interrogates the database to determine the length of
@@ -674,7 +680,6 @@ is initially set to 80 (for compatibility with Oracle products) but may
 be set within a program to whatever size is required.
 
 $ora_long is only used when fetching data, not when inserting it.
-
 
 =item * $ora_trunc
 
@@ -711,12 +716,10 @@ a LONG or LONGRAW field is truncated (and truncation is allowed) then
 will be set to zero if this was due to the end of data or an error code
 if it was due to an actual error.
 
-
 =item * $ora_errstr
 
 The $ora_errstr variable contains the Oracle error message
 corresponding to the current value of $ora_errno.
-
 
 =item * $ora_verno
 
@@ -727,7 +730,6 @@ $ora_verno would contain the value 3.142 (more or less, allowing for
 floating point error).
 
 =back
-
 
 =head1 SUBSTITUTION VARIABLES
 
@@ -765,7 +767,6 @@ the Oracle type to be used on a per field basis:
   $csr->bind_param(1, $value_x, $char_attrib);
   $csr->bind_param(2, $value_y, $char_attrib);
   ora_bind($csr);  # bind with no parameters since we've done bind_param()'s
-
 
 =head1 DEBUGGING
 
@@ -809,7 +810,6 @@ $lda then it is automatically passed on to any cursors returned by
   do ora_close($csr) || die "can't close cursor";
   do ora_logoff($lda) || die "can't log off Oracle";
 
-
 =head1 NOTES
 
 In keeping with the philosophy of Perl, there is no pre-defined limit
@@ -817,7 +817,6 @@ to the number of simultaneous logins or SQL statements which may be
 active, nor to the number of data fields which may be returned by a
 query. The only limits are those imposed by the amount of memory
 available, or by Oracle.
-
 
 =head1 WARNINGS
 
@@ -834,10 +833,11 @@ behaviour will exist. These are probably confined to error handling.
 B<All> differences in behaviour which are not documented here should be
 reported to to dbi-users@perl.org.
 
-
 =head1 SEE ALSO
 
 =over 2
+
+=item L<DBD::Oracle>
 
 =item Oracle Documentation
 
@@ -859,7 +859,7 @@ by Kevin Stock <kstock@auspex.fr>.
 DBI and Oraperl emulation using DBD::Oracle by Tim Bunce.
 
 =head1 MAINTAINER
-    
+
 As of DBD::Oracle release 1.17 in February 2006 The Pythian Group, Inc.
 (L<http://www.pythian.com>) are taking the lead in maintaining DBD::Oracle with
 my assistance and gratitude.
@@ -869,7 +869,37 @@ my assistance and gratitude.
 Copyright (c) 1994-2006 Tim Bunce. Ireland.
 Copyright (c) 2006-2008 John Scoles (The Pythian Group). Canada.
 
-The DBD::Oracle module is free open source software; you can
+Oraperl and the DBD::Oracle module is free open source software; you can
 redistribute it and/or modify it under the same terms as Perl 5.
 
+=head1 AUTHORS
+
+=over 4
+
+=item *
+
+Tim Bunce <timb@cpan.org>
+
+=item *
+
+John Scoles
+
+=item *
+
+Yanick Champoux <yanick@cpan.org>
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 1994 by Tim Bunce.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
 =cut
+
+
+__END__
+
+

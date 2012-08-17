@@ -1,6 +1,6 @@
 Revision history for Oraperl
 
-{{$NEXT}}
+1.50      2012-08-17
     - Oraperl module separated from the main DBD::Release distro,
         to ease deprecation process.
 
