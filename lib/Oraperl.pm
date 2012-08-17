@@ -143,9 +143,9 @@ sub ora_do {
     # We must be carefull not to execute them again! This needs careful
     # examination and thought.
     # Perhaps oracle is smart enough not to execute them again?
-    my $ret = $csr->execute(@params);
+    $csr->execute(@params);
     my $rows = $csr->rows;
-    ($rows == 0) ? "0E0" : $rows;
+    return  $rows ||  '0E0';
 }
 
 
